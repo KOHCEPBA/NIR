@@ -1,0 +1,411 @@
+/curricula:
+  get:
+    tags:
+    - Curricula
+    summary: List curricula
+    operationId: listCurricula
+    parameters:
+    - $ref: ../components/parameters.yaml#/Cursor
+    - $ref: ../components/parameters.yaml#/Limit
+    - name: educational_program_id
+      in: query
+      schema:
+        type: string
+        format: uuid
+    - name: training_direction_id
+      in: query
+      schema:
+        type: string
+        format: uuid
+    - name: admission_year
+      in: query
+      schema:
+        type: integer
+        minimum: 2000
+        maximum: 2200
+    responses:
+      '200':
+        description: Curriculum page
+        content:
+          application/json:
+            schema:
+              $ref: ../components/schemas/curricula.yaml#/CurriculumPage
+      '401':
+        $ref: ../components/responses.yaml#/Unauthorized
+      default:
+        $ref: ../components/responses.yaml#/Error
+  post:
+    tags:
+    - Curricula
+    summary: Create a curriculum
+    operationId: createCurriculum
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: ../components/schemas/curricula.yaml#/CurriculumCreate
+    responses:
+      '201':
+        description: Curriculum created
+        headers:
+          Location:
+            $ref: ../components/headers.yaml#/Location
+          ETag:
+            $ref: ../components/headers.yaml#/ETag
+        content:
+          application/json:
+            schema:
+              $ref: ../components/schemas/curricula.yaml#/Curriculum
+      '401':
+        $ref: ../components/responses.yaml#/Unauthorized
+      default:
+        $ref: ../components/responses.yaml#/Error
+/curricula/{curriculum_id}:
+  parameters:
+  - $ref: ../components/parameters.yaml#/CurriculumId
+  get:
+    tags:
+    - Curricula
+    summary: Get a curriculum
+    operationId: getCurriculum
+    parameters:
+    - $ref: ../components/parameters.yaml#/IfNoneMatch
+    responses:
+      '200':
+        description: Current editable curriculum
+        headers:
+          ETag:
+            $ref: ../components/headers.yaml#/ETag
+        content:
+          application/json:
+            schema:
+              $ref: ../components/schemas/curricula.yaml#/Curriculum
+      '401':
+        $ref: ../components/responses.yaml#/Unauthorized
+      '304':
+        description: Curriculum revision has not changed
+      default:
+        $ref: ../components/responses.yaml#/Error
+  patch:
+    tags:
+    - Curricula
+    summary: Update curriculum metadata
+    operationId: updateCurriculum
+    parameters:
+    - $ref: ../components/parameters.yaml#/IfMatch
+    requestBody:
+      required: true
+      content:
+        application/merge-patch+json:
+          schema:
+            $ref: ../components/schemas/curricula.yaml#/CurriculumPatch
+    responses:
+      '200':
+        description: Curriculum updated
+        headers:
+          ETag:
+            $ref: ../components/headers.yaml#/ETag
+        content:
+          application/json:
+            schema:
+              $ref: ../components/schemas/curricula.yaml#/Curriculum
+      '409':
+        $ref: ../components/responses.yaml#/Conflict
+      '401':
+        $ref: ../components/responses.yaml#/Unauthorized
+      default:
+        $ref: ../components/responses.yaml#/Error
+  delete:
+    tags:
+    - Curricula
+    summary: Archive a curriculum
+    operationId: archiveCurriculum
+    parameters:
+    - $ref: ../components/parameters.yaml#/IfMatch
+    responses:
+      '204':
+        description: Curriculum archived
+      '409':
+        $ref: ../components/responses.yaml#/Conflict
+      '401':
+        $ref: ../components/responses.yaml#/Unauthorized
+      default:
+        $ref: ../components/responses.yaml#/Error
+/curricula/{curriculum_id}/disciplines:
+  parameters:
+  - $ref: ../components/parameters.yaml#/CurriculumId
+  post:
+    tags:
+    - Curricula
+    summary: Add a discipline to a curriculum
+    operationId: createCurriculumDiscipline
+    parameters:
+    - $ref: ../components/parameters.yaml#/IfMatch
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: ../components/schemas/curricula.yaml#/DisciplineCreate
+    responses:
+      '201':
+        description: Discipline added to curriculum
+        headers:
+          Location:
+            $ref: ../components/headers.yaml#/Location
+          ETag:
+            $ref: ../components/headers.yaml#/ETag
+        content:
+          application/json:
+            schema:
+              $ref: ../components/schemas/curricula.yaml#/CurriculumDiscipline
+      '409':
+        $ref: ../components/responses.yaml#/Conflict
+      '401':
+        $ref: ../components/responses.yaml#/Unauthorized
+      default:
+        $ref: ../components/responses.yaml#/Error
+/curricula/{curriculum_id}/blocks:
+  parameters:
+  - $ref: ../components/parameters.yaml#/CurriculumId
+  post:
+    tags:
+    - Curricula
+    summary: Create a curriculum block
+    operationId: createCurriculumBlock
+    parameters:
+    - $ref: ../components/parameters.yaml#/IfMatch
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: ../components/schemas/curricula.yaml#/BlockCreate
+    responses:
+      '201':
+        description: Curriculum block created
+        headers:
+          Location:
+            $ref: ../components/headers.yaml#/Location
+          ETag:
+            $ref: ../components/headers.yaml#/ETag
+        content:
+          application/json:
+            schema:
+              $ref: ../components/schemas/curricula.yaml#/CurriculumBlock
+      '409':
+        $ref: ../components/responses.yaml#/Conflict
+      '401':
+        $ref: ../components/responses.yaml#/Unauthorized
+      default:
+        $ref: ../components/responses.yaml#/Error
+/curricula/{curriculum_id}/blocks/{block_id}:
+  parameters:
+  - $ref: ../components/parameters.yaml#/CurriculumId
+  - $ref: ../components/parameters.yaml#/BlockId
+  patch:
+    tags:
+    - Curricula
+    summary: Update a curriculum block
+    operationId: updateCurriculumBlock
+    parameters:
+    - $ref: ../components/parameters.yaml#/IfMatch
+    requestBody:
+      required: true
+      content:
+        application/merge-patch+json:
+          schema:
+            $ref: ../components/schemas/curricula.yaml#/BlockPatch
+    responses:
+      '200':
+        description: Curriculum block updated
+        headers:
+          ETag:
+            $ref: ../components/headers.yaml#/ETag
+        content:
+          application/json:
+            schema:
+              $ref: ../components/schemas/curricula.yaml#/CurriculumBlock
+      '409':
+        $ref: ../components/responses.yaml#/Conflict
+      '401':
+        $ref: ../components/responses.yaml#/Unauthorized
+      default:
+        $ref: ../components/responses.yaml#/Error
+  delete:
+    tags:
+    - Curricula
+    summary: Delete an empty curriculum block
+    operationId: deleteCurriculumBlock
+    parameters:
+    - $ref: ../components/parameters.yaml#/IfMatch
+    responses:
+      '204':
+        description: Empty curriculum block deleted
+      '409':
+        $ref: ../components/responses.yaml#/Conflict
+      '401':
+        $ref: ../components/responses.yaml#/Unauthorized
+      default:
+        $ref: ../components/responses.yaml#/Error
+/curricula/{curriculum_id}/disciplines/{discipline_id}:
+  parameters:
+  - $ref: ../components/parameters.yaml#/CurriculumId
+  - $ref: ../components/parameters.yaml#/DisciplineId
+  patch:
+    tags:
+    - Curricula
+    summary: Update a curriculum discipline
+    operationId: updateCurriculumDiscipline
+    parameters:
+    - $ref: ../components/parameters.yaml#/IfMatch
+    requestBody:
+      required: true
+      content:
+        application/merge-patch+json:
+          schema:
+            $ref: ../components/schemas/curricula.yaml#/DisciplinePatch
+    responses:
+      '200':
+        description: Discipline updated
+        headers:
+          ETag:
+            $ref: ../components/headers.yaml#/ETag
+        content:
+          application/json:
+            schema:
+              $ref: ../components/schemas/curricula.yaml#/CurriculumDiscipline
+      '409':
+        $ref: ../components/responses.yaml#/Conflict
+      '401':
+        $ref: ../components/responses.yaml#/Unauthorized
+      default:
+        $ref: ../components/responses.yaml#/Error
+  delete:
+    tags:
+    - Curricula
+    summary: Remove a discipline from a curriculum
+    operationId: deleteCurriculumDiscipline
+    parameters:
+    - $ref: ../components/parameters.yaml#/IfMatch
+    responses:
+      '204':
+        description: Discipline removed
+      '409':
+        $ref: ../components/responses.yaml#/Conflict
+      '401':
+        $ref: ../components/responses.yaml#/Unauthorized
+      default:
+        $ref: ../components/responses.yaml#/Error
+/curricula/{curriculum_id}/disciplines/{discipline_id}/workloads/{period_id}:
+  parameters:
+  - $ref: ../components/parameters.yaml#/CurriculumId
+  - $ref: ../components/parameters.yaml#/DisciplineId
+  - $ref: ../components/parameters.yaml#/PeriodId
+  put:
+    tags:
+    - Curricula
+    summary: Create or replace a discipline workload
+    operationId: putDisciplineWorkload
+    parameters:
+    - $ref: ../components/parameters.yaml#/IfMatch
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: ../components/schemas/curricula.yaml#/WorkloadInput
+    responses:
+      '200':
+        description: Workload replaced
+        headers:
+          ETag:
+            $ref: ../components/headers.yaml#/ETag
+        content:
+          application/json:
+            schema:
+              $ref: ../components/schemas/curricula.yaml#/Workload
+      '201':
+        description: Workload created
+        headers:
+          Location:
+            $ref: ../components/headers.yaml#/Location
+          ETag:
+            $ref: ../components/headers.yaml#/ETag
+        content:
+          application/json:
+            schema:
+              $ref: ../components/schemas/curricula.yaml#/Workload
+      '409':
+        $ref: ../components/responses.yaml#/Conflict
+      '401':
+        $ref: ../components/responses.yaml#/Unauthorized
+      default:
+        $ref: ../components/responses.yaml#/Error
+  delete:
+    tags:
+    - Curricula
+    summary: Delete a discipline workload
+    operationId: deleteDisciplineWorkload
+    parameters:
+    - $ref: ../components/parameters.yaml#/IfMatch
+    responses:
+      '204':
+        description: Workload deleted
+      '409':
+        $ref: ../components/responses.yaml#/Conflict
+      '401':
+        $ref: ../components/responses.yaml#/Unauthorized
+      default:
+        $ref: ../components/responses.yaml#/Error
+/curricula/{curriculum_id}/prerequisites:
+  parameters:
+  - $ref: ../components/parameters.yaml#/CurriculumId
+  post:
+    tags:
+    - Curricula
+    summary: Create a discipline prerequisite
+    operationId: createDisciplinePrerequisite
+    parameters:
+    - $ref: ../components/parameters.yaml#/IfMatch
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: ../components/schemas/curricula.yaml#/PrerequisiteCreate
+    responses:
+      '201':
+        description: Prerequisite created
+        headers:
+          Location:
+            $ref: ../components/headers.yaml#/Location
+        content:
+          application/json:
+            schema:
+              $ref: ../components/schemas/curricula.yaml#/Prerequisite
+      '401':
+        $ref: ../components/responses.yaml#/Unauthorized
+      default:
+        $ref: ../components/responses.yaml#/Error
+/curricula/{curriculum_id}/prerequisites/{prerequisite_id}:
+  parameters:
+  - $ref: ../components/parameters.yaml#/CurriculumId
+  - $ref: ../components/parameters.yaml#/PrerequisiteId
+  delete:
+    tags:
+    - Curricula
+    summary: Delete a discipline prerequisite
+    operationId: deleteDisciplinePrerequisite
+    parameters:
+    - $ref: ../components/parameters.yaml#/IfMatch
+    responses:
+      '204':
+        description: Prerequisite deleted
+      '409':
+        $ref: ../components/responses.yaml#/Conflict
+      '401':
+        $ref: ../components/responses.yaml#/Unauthorized
+      default:
+        $ref: ../components/responses.yaml#/Error

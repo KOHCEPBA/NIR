@@ -1,0 +1,149 @@
+/approval-instances:
+  post:
+    tags:
+    - Approval
+    summary: Start curriculum approval
+    operationId: createApprovalInstance
+    parameters:
+    - $ref: ../components/parameters.yaml#/IdempotencyKey
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+            - curriculum_version_id
+            properties:
+              curriculum_version_id:
+                type: string
+                format: uuid
+              warning_acknowledgement:
+                type:
+                - string
+                - 'null'
+                minLength: 1
+                maxLength: 2000
+                description: Required when the version validation outcome is WARNING.
+    responses:
+      '201':
+        description: Approval workflow started
+        headers:
+          Location:
+            $ref: ../components/headers.yaml#/Location
+        content:
+          application/json:
+            schema:
+              $ref: ../components/schemas/approvals.yaml#/ApprovalInstance
+      '409':
+        $ref: ../components/responses.yaml#/Conflict
+      '422':
+        $ref: ../components/responses.yaml#/UnprocessableEntity
+      '401':
+        $ref: ../components/responses.yaml#/Unauthorized
+      default:
+        $ref: ../components/responses.yaml#/Error
+/approval-instances/{approval_id}:
+  parameters:
+  - $ref: ../components/parameters.yaml#/ApprovalId
+  get:
+    tags:
+    - Approval
+    summary: Get an approval workflow
+    operationId: getApprovalInstance
+    responses:
+      '200':
+        description: Approval workflow, steps and comments
+        content:
+          application/json:
+            schema:
+              $ref: ../components/schemas/approvals.yaml#/ApprovalInstance
+      '401':
+        $ref: ../components/responses.yaml#/Unauthorized
+      default:
+        $ref: ../components/responses.yaml#/Error
+/approval-instances/{approval_id}/decisions:
+  parameters:
+  - name: approval_id
+    in: path
+    required: true
+    schema:
+      type: string
+      format: uuid
+  post:
+    tags:
+    - Approval
+    summary: Record an approval decision
+    operationId: createApprovalDecision
+    parameters:
+    - $ref: ../components/parameters.yaml#/IdempotencyKey
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+            - decision
+            properties:
+              decision:
+                type: string
+                enum:
+                - APPROVE
+                - REQUEST_CHANGES
+                - REJECT
+              comment:
+                type:
+                - string
+                - 'null'
+                maxLength: 4000
+    responses:
+      '201':
+        description: Decision recorded
+        content:
+          application/json:
+            schema:
+              $ref: ../components/schemas/approvals.yaml#/ApprovalInstance
+      '409':
+        $ref: ../components/responses.yaml#/Conflict
+      '401':
+        $ref: ../components/responses.yaml#/Unauthorized
+      default:
+        $ref: ../components/responses.yaml#/Error
+/approval-instances/{approval_id}/comments:
+  parameters:
+  - $ref: ../components/parameters.yaml#/ApprovalId
+  post:
+    tags:
+    - Approval
+    summary: Add an approval comment
+    operationId: createApprovalComment
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+            - text
+            properties:
+              entity_id:
+                type:
+                - string
+                - 'null'
+                format: uuid
+              text:
+                type: string
+                minLength: 1
+                maxLength: 4000
+    responses:
+      '201':
+        description: Comment recorded
+        content:
+          application/json:
+            schema:
+              $ref: ../components/schemas/approvals.yaml#/ApprovalComment
+      '401':
+        $ref: ../components/responses.yaml#/Unauthorized
+      default:
+        $ref: ../components/responses.yaml#/Error

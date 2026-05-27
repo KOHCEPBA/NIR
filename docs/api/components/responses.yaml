@@ -1,0 +1,24 @@
+Unauthorized:
+  description: Authentication is required or the access token is invalid
+  content:
+    application/json:
+      schema:
+        $ref: ./schemas/common.yaml#/ErrorResponse
+Error:
+  description: Request failed
+  content:
+    application/json:
+      schema:
+        $ref: ./schemas/common.yaml#/ErrorResponse
+Conflict:
+  description: Revision or business-state conflict
+  content:
+    application/json:
+      schema:
+        $ref: ./schemas/common.yaml#/ErrorResponse
+UnprocessableEntity:
+  description: The request is syntactically valid but violates a domain invariant
+  content:
+    application/json:
+      schema:
+        $ref: ./schemas/common.yaml#/ErrorResponse

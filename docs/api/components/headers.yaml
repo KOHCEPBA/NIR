@@ -1,0 +1,9 @@
+Location:
+  description: URI of the created resource
+  schema:
+    type: string
+    format: uri-reference
+ETag:
+  description: Current aggregate revision or entity row version, depending on the returned resource.
+  schema:
+    type: string

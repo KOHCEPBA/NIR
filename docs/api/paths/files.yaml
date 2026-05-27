@@ -1,0 +1,162 @@
+/imports:
+  post:
+    tags:
+    - Files
+    summary: Upload and parse an import file
+    operationId: createImport
+    requestBody:
+      required: true
+      content:
+        multipart/form-data:
+          schema:
+            type: object
+            required:
+            - file
+            - import_type
+            properties:
+              file:
+                type: string
+                format: binary
+              import_type:
+                type: string
+                enum:
+                - CURRICULUM
+                - REGULATORY_DOCUMENT
+    responses:
+      '201':
+        description: File parsed and normalized staging data created
+        headers:
+          Location:
+            $ref: ../components/headers.yaml#/Location
+        content:
+          application/json:
+            schema:
+              $ref: ../components/schemas/files.yaml#/Import
+      '401':
+        $ref: ../components/responses.yaml#/Unauthorized
+      '413':
+        description: Import file exceeds the configured size limit
+        content:
+          application/json:
+            schema:
+              $ref: ../components/schemas/common.yaml#/ErrorResponse
+      '415':
+        description: Unsupported import media type or file signature
+        content:
+          application/json:
+            schema:
+              $ref: ../components/schemas/common.yaml#/ErrorResponse
+      '422':
+        description: File cannot be parsed into staging data
+        content:
+          application/json:
+            schema:
+              $ref: ../components/schemas/common.yaml#/ErrorResponse
+      default:
+        $ref: ../components/responses.yaml#/Error
+/imports/{import_id}:
+  get:
+    tags:
+    - Files
+    summary: Get normalized staging data and mapping issues
+    operationId: getImport
+    parameters:
+    - name: import_id
+      in: path
+      required: true
+      schema:
+        type: string
+        format: uuid
+    responses:
+      '200':
+        description: Import staging data
+        content:
+          application/json:
+            schema:
+              $ref: ../components/schemas/files.yaml#/Import
+      '401':
+        $ref: ../components/responses.yaml#/Unauthorized
+      default:
+        $ref: ../components/responses.yaml#/Error
+/imports/{import_id}/applications:
+  post:
+    tags:
+    - Files
+    summary: Apply normalized staging data
+    operationId: createImportApplication
+    parameters:
+    - name: import_id
+      in: path
+      required: true
+      schema:
+        type: string
+        format: uuid
+    - $ref: ../components/parameters.yaml#/IdempotencyKey
+    responses:
+      '200':
+        description: Import applied atomically
+        content:
+          application/json:
+            schema:
+              $ref: ../components/schemas/files.yaml#/Import
+      '401':
+        $ref: ../components/responses.yaml#/Unauthorized
+      '409':
+        $ref: ../components/responses.yaml#/Conflict
+      '422':
+        description: Import contains blocking issues
+        content:
+          application/json:
+            schema:
+              $ref: ../components/schemas/common.yaml#/ErrorResponse
+      default:
+        $ref: ../components/responses.yaml#/Error
+/curricula/{curriculum_id}/versions/{version_id}/export:
+  get:
+    tags:
+    - Files
+    summary: Generate and download a version export
+    operationId: exportCurriculumVersion
+    parameters:
+    - $ref: ../components/parameters.yaml#/CurriculumId
+    - $ref: ../components/parameters.yaml#/VersionId
+    - name: format
+      in: query
+      required: true
+      schema:
+        type: string
+        enum:
+        - XLSX
+        - PDF
+        - JSON
+        - XML
+    responses:
+      '200':
+        description: Generated export file
+        headers:
+          Content-Disposition:
+            description: Attachment file name
+            schema:
+              type: string
+        content:
+          application/vnd.openxmlformats-officedocument.spreadsheetml.sheet:
+            schema:
+              type: string
+              format: binary
+          application/pdf:
+            schema:
+              type: string
+              format: binary
+          application/json:
+            schema:
+              type: object
+              additionalProperties: true
+          application/xml:
+            schema:
+              type: string
+      '401':
+        $ref: ../components/responses.yaml#/Unauthorized
+      '404':
+        $ref: ../components/responses.yaml#/Error
+      default:
+        $ref: ../components/responses.yaml#/Error

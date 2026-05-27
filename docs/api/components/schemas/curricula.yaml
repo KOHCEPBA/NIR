@@ -1,0 +1,355 @@
+CurriculumPage:
+  type: object
+  required:
+  - data
+  - page
+  properties:
+    data:
+      type: array
+      items:
+        $ref: '#/CurriculumSummary'
+    page:
+      $ref: ./common.yaml#/Page
+CurriculumCreate:
+  type: object
+  required:
+  - educational_program_id
+  - training_direction_id
+  - admission_year
+  - title
+  properties:
+    educational_program_id:
+      type: string
+      format: uuid
+    training_direction_id:
+      type: string
+      format: uuid
+    admission_year:
+      type: integer
+      minimum: 2000
+      maximum: 2200
+    title:
+      type: string
+      minLength: 1
+      maxLength: 500
+CurriculumPatch:
+  type: object
+  minProperties: 1
+  properties:
+    title:
+      type: string
+      minLength: 1
+      maxLength: 500
+    educational_program_id:
+      type: string
+      format: uuid
+    training_direction_id:
+      type: string
+      format: uuid
+CurriculumSummary:
+  type: object
+  required:
+  - id
+  - title
+  - educational_program_id
+  - training_direction_id
+  - admission_year
+  - status
+  - revision
+  properties:
+    id:
+      type: string
+      format: uuid
+    title:
+      type: string
+    educational_program_id:
+      type: string
+      format: uuid
+    training_direction_id:
+      type: string
+      format: uuid
+    admission_year:
+      type: integer
+    status:
+      type: string
+      enum:
+      - DRAFT
+      - ACTIVE
+      - ARCHIVED
+    revision:
+      type: integer
+      format: int64
+      description: Aggregate curriculum revision incremented by every successful nested change.
+Curriculum:
+  allOf:
+  - $ref: '#/CurriculumSummary'
+  - type: object
+    required:
+    - blocks
+    - disciplines
+    - study_periods
+    properties:
+      blocks:
+        type: array
+        items:
+          $ref: '#/CurriculumBlock'
+      disciplines:
+        type: array
+        items:
+          $ref: '#/CurriculumDiscipline'
+      study_periods:
+        type: array
+        items:
+          $ref: '#/StudyPeriod'
+CurriculumBlock:
+  type: object
+  required:
+  - id
+  - title
+  - block_type
+  - sort_order
+  - row_version
+  properties:
+    id:
+      type: string
+      format: uuid
+    parent_block_id:
+      type:
+      - string
+      - 'null'
+      format: uuid
+    title:
+      type: string
+    block_type:
+      type: string
+      enum:
+      - REQUIRED
+      - ELECTIVE
+      - OPTIONAL
+    sort_order:
+      type: integer
+    row_version:
+      type: integer
+      format: int64
+      description: Entity-level optimistic locking version incremented only when this entity changes.
+BlockCreate:
+  type: object
+  required:
+  - title
+  - block_type
+  - sort_order
+  properties:
+    parent_block_id:
+      type:
+      - string
+      - 'null'
+      format: uuid
+    title:
+      type: string
+      minLength: 1
+      maxLength: 500
+    block_type:
+      type: string
+      enum:
+      - REQUIRED
+      - ELECTIVE
+      - OPTIONAL
+    sort_order:
+      type: integer
+      minimum: 0
+BlockPatch:
+  type: object
+  minProperties: 1
+  properties:
+    parent_block_id:
+      type:
+      - string
+      - 'null'
+      format: uuid
+    title:
+      type: string
+      minLength: 1
+      maxLength: 500
+    block_type:
+      type: string
+      enum:
+      - REQUIRED
+      - ELECTIVE
+      - OPTIONAL
+    sort_order:
+      type: integer
+      minimum: 0
+StudyPeriod:
+  type: object
+  required:
+  - id
+  - period_type
+  - study_year
+  - period_number
+  - title
+  properties:
+    id:
+      type: string
+      format: uuid
+    period_type:
+      type: string
+      enum:
+      - MODULE
+    study_year:
+      type: integer
+      minimum: 1
+    period_number:
+      type: integer
+      minimum: 1
+      maximum: 4
+    title:
+      type: string
+DisciplineCreate:
+  type: object
+  required:
+  - block_id
+  - catalog_discipline_id
+  - total_hours
+  - total_credits
+  - sort_order
+  properties:
+    block_id:
+      type: string
+      format: uuid
+    catalog_discipline_id:
+      type: string
+      format: uuid
+    display_name:
+      type:
+      - string
+      - 'null'
+      maxLength: 500
+    total_hours:
+      type: integer
+      minimum: 0
+    total_credits:
+      type: number
+      minimum: 0
+    sort_order:
+      type: integer
+      minimum: 0
+DisciplinePatch:
+  type: object
+  minProperties: 1
+  properties:
+    block_id:
+      type: string
+      format: uuid
+    display_name:
+      type:
+      - string
+      - 'null'
+      maxLength: 500
+    total_hours:
+      type: integer
+      minimum: 0
+    total_credits:
+      type: number
+      minimum: 0
+    sort_order:
+      type: integer
+      minimum: 0
+CurriculumDiscipline:
+  allOf:
+  - $ref: '#/DisciplineCreate'
+  - type: object
+    required:
+    - id
+    - row_version
+    - workloads
+    properties:
+      id:
+        type: string
+        format: uuid
+      row_version:
+        type: integer
+        format: int64
+        description: Entity-level optimistic locking version incremented only when this entity changes.
+      workloads:
+        type: array
+        items:
+          $ref: '#/Workload'
+Workload:
+  type: object
+  required:
+  - study_period_id
+  - lecture_hours
+  - seminar_hours
+  - practice_hours
+  - self_study_hours
+  - credits
+  - row_version
+  properties:
+    study_period_id:
+      type: string
+      format: uuid
+    lecture_hours:
+      type: integer
+      minimum: 0
+    seminar_hours:
+      type: integer
+      minimum: 0
+    practice_hours:
+      type: integer
+      minimum: 0
+    self_study_hours:
+      type: integer
+      minimum: 0
+    credits:
+      type: number
+      minimum: 0
+    row_version:
+      type: integer
+      format: int64
+      description: Entity-level optimistic locking version incremented only when this entity changes.
+WorkloadInput:
+  type: object
+  required:
+  - lecture_hours
+  - seminar_hours
+  - practice_hours
+  - self_study_hours
+  - credits
+  properties:
+    lecture_hours:
+      type: integer
+      minimum: 0
+    seminar_hours:
+      type: integer
+      minimum: 0
+    practice_hours:
+      type: integer
+      minimum: 0
+    self_study_hours:
+      type: integer
+      minimum: 0
+    credits:
+      type: number
+      minimum: 0
+PrerequisiteCreate:
+  type: object
+  required:
+  - discipline_id
+  - prerequisite_discipline_id
+  properties:
+    discipline_id:
+      type: string
+      format: uuid
+    prerequisite_discipline_id:
+      type: string
+      format: uuid
+Prerequisite:
+  allOf:
+  - $ref: '#/PrerequisiteCreate'
+  - type: object
+    required:
+    - id
+    properties:
+      id:
+        type: string
+        format: uuid

@@ -1,0 +1,68 @@
+ValidationRun:
+  type: object
+  required:
+  - id
+  - curriculum_id
+  - status
+  - source_revision
+  - results
+  - created_at
+  properties:
+    id:
+      type: string
+      format: uuid
+    curriculum_id:
+      type: string
+      format: uuid
+    version_id:
+      type:
+      - string
+      - 'null'
+      format: uuid
+    source_revision:
+      type: integer
+      format: int64
+    status:
+      type: string
+      enum:
+      - PENDING
+      - RUNNING
+      - COMPLETED
+      - FAILED
+      - UNAVAILABLE
+    outcome:
+      type:
+      - string
+      - 'null'
+      enum:
+      - ACCEPT
+      - WARNING
+      - ERROR
+      - null
+    results:
+      type: array
+      items:
+        type: object
+        required:
+        - rule_code
+        - result
+        - message
+        properties:
+          rule_code:
+            type: string
+          result:
+            type: string
+            enum:
+            - ACCEPT
+            - WARNING
+            - ERROR
+          entity_id:
+            type:
+            - string
+            - 'null'
+            format: uuid
+          message:
+            type: string
+    created_at:
+      type: string
+      format: date-time

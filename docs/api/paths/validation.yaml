@@ -1,0 +1,84 @@
+/curricula/{curriculum_id}/validation-runs:
+  parameters:
+  - $ref: ../components/parameters.yaml#/CurriculumId
+  post:
+    tags:
+    - Validation
+    summary: Run curriculum validation
+    operationId: createValidationRun
+    requestBody:
+      required: false
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              version_id:
+                type:
+                - string
+                - 'null'
+                format: uuid
+                description: Omit to validate the current curriculum revision.
+    responses:
+      '201':
+        description: Validation completed synchronously
+        headers:
+          Location:
+            $ref: ../components/headers.yaml#/Location
+        content:
+          application/json:
+            schema:
+              $ref: ../components/schemas/validation.yaml#/ValidationRun
+      '401':
+        $ref: ../components/responses.yaml#/Unauthorized
+      default:
+        $ref: ../components/responses.yaml#/Error
+  get:
+    tags:
+    - Validation
+    summary: List curriculum validation runs
+    operationId: listValidationRuns
+    parameters:
+    - $ref: ../components/parameters.yaml#/Cursor
+    - $ref: ../components/parameters.yaml#/Limit
+    responses:
+      '200':
+        description: Validation run page
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - data
+              - page
+              properties:
+                data:
+                  type: array
+                  items:
+                    $ref: ../components/schemas/validation.yaml#/ValidationRun
+                page:
+                  $ref: ../components/schemas/common.yaml#/Page
+      '401':
+        $ref: ../components/responses.yaml#/Unauthorized
+      default:
+        $ref: ../components/responses.yaml#/Error
+/curricula/{curriculum_id}/validation-runs/{run_id}:
+  parameters:
+  - $ref: ../components/parameters.yaml#/CurriculumId
+  - $ref: ../components/parameters.yaml#/ValidationRunId
+  get:
+    tags:
+    - Validation
+    summary: Get a curriculum validation run
+    operationId: getValidationRun
+    responses:
+      '200':
+        description: Validation run
+        content:
+          application/json:
+            schema:
+              $ref: ../components/schemas/validation.yaml#/ValidationRun
+      '401':
+        $ref: ../components/responses.yaml#/Unauthorized
+      default:
+        $ref: ../components/responses.yaml#/Error

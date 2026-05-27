@@ -1,0 +1,89 @@
+CurriculumId:
+  name: curriculum_id
+  in: path
+  required: true
+  schema:
+    type: string
+    format: uuid
+DisciplineId:
+  name: discipline_id
+  in: path
+  required: true
+  schema:
+    type: string
+    format: uuid
+BlockId:
+  name: block_id
+  in: path
+  required: true
+  schema:
+    type: string
+    format: uuid
+PeriodId:
+  name: period_id
+  in: path
+  required: true
+  schema:
+    type: string
+    format: uuid
+PrerequisiteId:
+  name: prerequisite_id
+  in: path
+  required: true
+  schema:
+    type: string
+    format: uuid
+VersionId:
+  name: version_id
+  in: path
+  required: true
+  schema:
+    type: string
+    format: uuid
+ValidationRunId:
+  name: run_id
+  in: path
+  required: true
+  schema:
+    type: string
+    format: uuid
+ApprovalId:
+  name: approval_id
+  in: path
+  required: true
+  schema:
+    type: string
+    format: uuid
+Cursor:
+  name: cursor
+  in: query
+  schema:
+    type: string
+Limit:
+  name: limit
+  in: query
+  schema:
+    type: integer
+    minimum: 1
+    maximum: 100
+    default: 50
+IfMatch:
+  name: If-Match
+  in: header
+  required: true
+  schema:
+    type: string
+IfNoneMatch:
+  name: If-None-Match
+  in: header
+  required: false
+  schema:
+    type: string
+IdempotencyKey:
+  name: Idempotency-Key
+  in: header
+  required: true
+  schema:
+    type: string
+    minLength: 16
+    maxLength: 128

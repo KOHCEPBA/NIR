@@ -1,0 +1,144 @@
+/curricula/{curriculum_id}/versions:
+  parameters:
+  - $ref: ../components/parameters.yaml#/CurriculumId
+  get:
+    tags:
+    - Versions
+    summary: List curriculum versions
+    operationId: listCurriculumVersions
+    parameters:
+    - $ref: ../components/parameters.yaml#/Cursor
+    - $ref: ../components/parameters.yaml#/Limit
+    responses:
+      '200':
+        description: Version page
+        content:
+          application/json:
+            schema:
+              $ref: ../components/schemas/versions.yaml#/VersionPage
+      '401':
+        $ref: ../components/responses.yaml#/Unauthorized
+      default:
+        $ref: ../components/responses.yaml#/Error
+  post:
+    tags:
+    - Versions
+    summary: Save a curriculum version
+    operationId: createCurriculumVersion
+    parameters:
+    - $ref: ../components/parameters.yaml#/IdempotencyKey
+    requestBody:
+      required: false
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              comment:
+                type: string
+                maxLength: 1000
+    responses:
+      '201':
+        description: Immutable version created with its current validation status
+        headers:
+          Location:
+            $ref: ../components/headers.yaml#/Location
+        content:
+          application/json:
+            schema:
+              $ref: ../components/schemas/versions.yaml#/CurriculumVersion
+      '401':
+        $ref: ../components/responses.yaml#/Unauthorized
+      default:
+        $ref: ../components/responses.yaml#/Error
+/curricula/{curriculum_id}/versions/{version_id}:
+  parameters:
+  - $ref: ../components/parameters.yaml#/CurriculumId
+  - $ref: ../components/parameters.yaml#/VersionId
+  get:
+    tags:
+    - Versions
+    summary: Get a curriculum version
+    operationId: getCurriculumVersion
+    responses:
+      '200':
+        description: Immutable curriculum version
+        content:
+          application/json:
+            schema:
+              $ref: ../components/schemas/versions.yaml#/CurriculumVersion
+      '401':
+        $ref: ../components/responses.yaml#/Unauthorized
+      default:
+        $ref: ../components/responses.yaml#/Error
+/curricula/{curriculum_id}/version-comparisons:
+  parameters:
+  - $ref: ../components/parameters.yaml#/CurriculumId
+  - name: from_version_id
+    in: query
+    required: true
+    schema:
+      type: string
+      format: uuid
+  - name: to_version_id
+    in: query
+    required: true
+    schema:
+      type: string
+      format: uuid
+  get:
+    tags:
+    - Versions
+    summary: Compare two curriculum versions
+    operationId: compareCurriculumVersions
+    responses:
+      '200':
+        description: Entity-level and field-level version diff
+        content:
+          application/json:
+            schema:
+              $ref: ../components/schemas/versions.yaml#/VersionDiff
+      '401':
+        $ref: ../components/responses.yaml#/Unauthorized
+      default:
+        $ref: ../components/responses.yaml#/Error
+/curricula/{curriculum_id}/restorations:
+  parameters:
+  - $ref: ../components/parameters.yaml#/CurriculumId
+  post:
+    tags:
+    - Versions
+    summary: Restore a curriculum version
+    operationId: restoreCurriculumVersion
+    parameters:
+    - $ref: ../components/parameters.yaml#/IfMatch
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+            - version_id
+            properties:
+              version_id:
+                type: string
+                format: uuid
+    responses:
+      '201':
+        description: Restoration recorded and working state updated
+        headers:
+          Location:
+            $ref: ../components/headers.yaml#/Location
+          ETag:
+            $ref: ../components/headers.yaml#/ETag
+        content:
+          application/json:
+            schema:
+              $ref: ../components/schemas/curricula.yaml#/Curriculum
+      '409':
+        $ref: ../components/responses.yaml#/Conflict
+      '401':
+        $ref: ../components/responses.yaml#/Unauthorized
+      default:
+        $ref: ../components/responses.yaml#/Error

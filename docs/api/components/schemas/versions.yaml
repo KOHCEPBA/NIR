@@ -1,0 +1,153 @@
+VersionPage:
+  type: object
+  required:
+  - data
+  - page
+  properties:
+    data:
+      type: array
+      items:
+        $ref: '#/CurriculumVersion'
+    page:
+      $ref: ./common.yaml#/Page
+CurriculumVersion:
+  type: object
+  required:
+  - id
+  - curriculum_id
+  - version_number
+  - source_revision
+  - schema_version
+  - content_hash
+  - validation_status
+  - created_by
+  - created_at
+  properties:
+    id:
+      type: string
+      format: uuid
+    curriculum_id:
+      type: string
+      format: uuid
+    version_number:
+      type: integer
+      minimum: 1
+    source_revision:
+      type: integer
+      format: int64
+    schema_version:
+      type: integer
+      minimum: 1
+    content_hash:
+      type: string
+      description: SHA-256 of the canonical immutable snapshot; an integrity and equality marker, not a digital signature.
+    validation_status:
+      type: string
+      enum:
+      - PENDING
+      - RUNNING
+      - COMPLETED
+      - FAILED
+      - UNAVAILABLE
+    validation_outcome:
+      type:
+      - string
+      - 'null'
+      enum:
+      - ACCEPT
+      - WARNING
+      - ERROR
+      - null
+    validation_run_id:
+      type:
+      - string
+      - 'null'
+      format: uuid
+    validation_summary:
+      type:
+      - object
+      - 'null'
+      additionalProperties: true
+    validation_updated_at:
+      type:
+      - string
+      - 'null'
+      format: date-time
+    comment:
+      type:
+      - string
+      - 'null'
+    snapshot:
+      type:
+      - object
+      - 'null'
+      additionalProperties: true
+    created_by:
+      type: string
+      format: uuid
+    created_at:
+      type: string
+      format: date-time
+VersionDiff:
+  type: object
+  required:
+  - from_version_id
+  - to_version_id
+  - added
+  - removed
+  - modified
+  - summary
+  properties:
+    from_version_id:
+      type: string
+      format: uuid
+    to_version_id:
+      type: string
+      format: uuid
+    added:
+      type: array
+      items:
+        $ref: '#/EntityChange'
+    removed:
+      type: array
+      items:
+        $ref: '#/EntityChange'
+    modified:
+      type: array
+      items:
+        $ref: '#/EntityChange'
+    summary:
+      type: object
+      additionalProperties:
+        type: integer
+        minimum: 0
+EntityChange:
+  type: object
+  required:
+  - entity_type
+  - entity_id
+  properties:
+    entity_type:
+      type: string
+      enum:
+      - BLOCK
+      - DISCIPLINE
+      - WORKLOAD
+      - CONTROL_FORM
+      - PREREQUISITE
+    entity_id:
+      type: string
+      format: uuid
+    fields:
+      type: array
+      items:
+        type: object
+        required:
+        - field
+        - before
+        - after
+        properties:
+          field:
+            type: string
+          before: {}
+          after: {}

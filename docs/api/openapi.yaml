@@ -1,0 +1,175 @@
+openapi: 3.1.0
+info:
+  title: Curriculum Management API
+  version: 0.1.0
+  description: Target external API. MVP implements curriculum editing, validation, basic versions and XLSX export; import and advanced versioning start in Post-MVP 1, approval starts in Post-MVP 2.
+  license:
+    name: Proprietary
+    identifier: LicenseRef-Proprietary
+servers:
+- url: /api/v1
+security:
+- bearerAuth: []
+tags:
+- name: Curricula
+  description: Current curriculum state and its editable entities.
+  x-release: MVP
+- name: Versions
+  description: Immutable snapshots in MVP; restoration and comparison in Post-MVP 1.
+  x-release: MVP
+- name: Validation
+  description: Regulatory validation runs and results.
+  x-release: MVP
+- name: Approval
+  description: Approval workflows, decisions and comments introduced in Post-MVP 2.
+  x-release: Post-MVP 2
+- name: Files
+  description: Synchronous XLSX export in MVP; direct multipart import introduced in Post-MVP 1.
+  x-release: MVP
+paths:
+  /curricula:
+    $ref: ./paths/curricula.yaml#/~1curricula
+  /curricula/{curriculum_id}:
+    $ref: ./paths/curricula.yaml#/~1curricula~1{curriculum_id}
+  /curricula/{curriculum_id}/disciplines:
+    $ref: ./paths/curricula.yaml#/~1curricula~1{curriculum_id}~1disciplines
+  /curricula/{curriculum_id}/blocks:
+    $ref: ./paths/curricula.yaml#/~1curricula~1{curriculum_id}~1blocks
+  /curricula/{curriculum_id}/blocks/{block_id}:
+    $ref: ./paths/curricula.yaml#/~1curricula~1{curriculum_id}~1blocks~1{block_id}
+  /curricula/{curriculum_id}/disciplines/{discipline_id}:
+    $ref: ./paths/curricula.yaml#/~1curricula~1{curriculum_id}~1disciplines~1{discipline_id}
+  /curricula/{curriculum_id}/disciplines/{discipline_id}/workloads/{period_id}:
+    $ref: ./paths/curricula.yaml#/~1curricula~1{curriculum_id}~1disciplines~1{discipline_id}~1workloads~1{period_id}
+  /curricula/{curriculum_id}/prerequisites:
+    $ref: ./paths/curricula.yaml#/~1curricula~1{curriculum_id}~1prerequisites
+  /curricula/{curriculum_id}/prerequisites/{prerequisite_id}:
+    $ref: ./paths/curricula.yaml#/~1curricula~1{curriculum_id}~1prerequisites~1{prerequisite_id}
+  /curricula/{curriculum_id}/versions:
+    $ref: ./paths/versions.yaml#/~1curricula~1{curriculum_id}~1versions
+  /curricula/{curriculum_id}/versions/{version_id}:
+    $ref: ./paths/versions.yaml#/~1curricula~1{curriculum_id}~1versions~1{version_id}
+  /curricula/{curriculum_id}/version-comparisons:
+    $ref: ./paths/versions.yaml#/~1curricula~1{curriculum_id}~1version-comparisons
+  /curricula/{curriculum_id}/restorations:
+    $ref: ./paths/versions.yaml#/~1curricula~1{curriculum_id}~1restorations
+  /curricula/{curriculum_id}/validation-runs:
+    $ref: ./paths/validation.yaml#/~1curricula~1{curriculum_id}~1validation-runs
+  /curricula/{curriculum_id}/validation-runs/{run_id}:
+    $ref: ./paths/validation.yaml#/~1curricula~1{curriculum_id}~1validation-runs~1{run_id}
+  /approval-instances:
+    $ref: ./paths/approvals.yaml#/~1approval-instances
+  /approval-instances/{approval_id}:
+    $ref: ./paths/approvals.yaml#/~1approval-instances~1{approval_id}
+  /approval-instances/{approval_id}/decisions:
+    $ref: ./paths/approvals.yaml#/~1approval-instances~1{approval_id}~1decisions
+  /approval-instances/{approval_id}/comments:
+    $ref: ./paths/approvals.yaml#/~1approval-instances~1{approval_id}~1comments
+  /imports:
+    $ref: ./paths/files.yaml#/~1imports
+  /imports/{import_id}:
+    $ref: ./paths/files.yaml#/~1imports~1{import_id}
+  /imports/{import_id}/applications:
+    $ref: ./paths/files.yaml#/~1imports~1{import_id}~1applications
+  /curricula/{curriculum_id}/versions/{version_id}/export:
+    $ref: ./paths/files.yaml#/~1curricula~1{curriculum_id}~1versions~1{version_id}~1export
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  parameters:
+    CurriculumId:
+      $ref: ./components/parameters.yaml#/CurriculumId
+    DisciplineId:
+      $ref: ./components/parameters.yaml#/DisciplineId
+    BlockId:
+      $ref: ./components/parameters.yaml#/BlockId
+    PeriodId:
+      $ref: ./components/parameters.yaml#/PeriodId
+    PrerequisiteId:
+      $ref: ./components/parameters.yaml#/PrerequisiteId
+    VersionId:
+      $ref: ./components/parameters.yaml#/VersionId
+    ValidationRunId:
+      $ref: ./components/parameters.yaml#/ValidationRunId
+    ApprovalId:
+      $ref: ./components/parameters.yaml#/ApprovalId
+    Cursor:
+      $ref: ./components/parameters.yaml#/Cursor
+    Limit:
+      $ref: ./components/parameters.yaml#/Limit
+    IfMatch:
+      $ref: ./components/parameters.yaml#/IfMatch
+    IfNoneMatch:
+      $ref: ./components/parameters.yaml#/IfNoneMatch
+    IdempotencyKey:
+      $ref: ./components/parameters.yaml#/IdempotencyKey
+  headers:
+    Location:
+      $ref: ./components/headers.yaml#/Location
+    ETag:
+      $ref: ./components/headers.yaml#/ETag
+  responses:
+    Unauthorized:
+      $ref: ./components/responses.yaml#/Unauthorized
+    Error:
+      $ref: ./components/responses.yaml#/Error
+    Conflict:
+      $ref: ./components/responses.yaml#/Conflict
+  schemas:
+    Page:
+      $ref: ./components/schemas/common.yaml#/Page
+    CurriculumPage:
+      $ref: ./components/schemas/curricula.yaml#/CurriculumPage
+    VersionPage:
+      $ref: ./components/schemas/versions.yaml#/VersionPage
+    CurriculumCreate:
+      $ref: ./components/schemas/curricula.yaml#/CurriculumCreate
+    CurriculumPatch:
+      $ref: ./components/schemas/curricula.yaml#/CurriculumPatch
+    CurriculumSummary:
+      $ref: ./components/schemas/curricula.yaml#/CurriculumSummary
+    Curriculum:
+      $ref: ./components/schemas/curricula.yaml#/Curriculum
+    CurriculumBlock:
+      $ref: ./components/schemas/curricula.yaml#/CurriculumBlock
+    BlockCreate:
+      $ref: ./components/schemas/curricula.yaml#/BlockCreate
+    BlockPatch:
+      $ref: ./components/schemas/curricula.yaml#/BlockPatch
+    StudyPeriod:
+      $ref: ./components/schemas/curricula.yaml#/StudyPeriod
+    DisciplineCreate:
+      $ref: ./components/schemas/curricula.yaml#/DisciplineCreate
+    DisciplinePatch:
+      $ref: ./components/schemas/curricula.yaml#/DisciplinePatch
+    CurriculumDiscipline:
+      $ref: ./components/schemas/curricula.yaml#/CurriculumDiscipline
+    Workload:
+      $ref: ./components/schemas/curricula.yaml#/Workload
+    WorkloadInput:
+      $ref: ./components/schemas/curricula.yaml#/WorkloadInput
+    PrerequisiteCreate:
+      $ref: ./components/schemas/curricula.yaml#/PrerequisiteCreate
+    Prerequisite:
+      $ref: ./components/schemas/curricula.yaml#/Prerequisite
+    CurriculumVersion:
+      $ref: ./components/schemas/versions.yaml#/CurriculumVersion
+    VersionDiff:
+      $ref: ./components/schemas/versions.yaml#/VersionDiff
+    EntityChange:
+      $ref: ./components/schemas/versions.yaml#/EntityChange
+    ValidationRun:
+      $ref: ./components/schemas/validation.yaml#/ValidationRun
+    ApprovalInstance:
+      $ref: ./components/schemas/approvals.yaml#/ApprovalInstance
+    ApprovalComment:
+      $ref: ./components/schemas/approvals.yaml#/ApprovalComment
+    Import:
+      $ref: ./components/schemas/files.yaml#/Import
+    ImportIssue:
+      $ref: ./components/schemas/files.yaml#/ImportIssue
+    ErrorResponse:
+      $ref: ./components/schemas/common.yaml#/ErrorResponse

@@ -1,0 +1,75 @@
+ApprovalInstance:
+  type: object
+  required:
+  - id
+  - curriculum_version_id
+  - status
+  - current_step
+  - created_at
+  properties:
+    id:
+      type: string
+      format: uuid
+    curriculum_version_id:
+      type: string
+      format: uuid
+    status:
+      type: string
+      enum:
+      - IN_PROGRESS
+      - APPROVED
+      - CHANGES_REQUESTED
+      - REJECTED
+    current_step:
+      type:
+      - string
+      - 'null'
+      enum:
+      - HEAD
+      - DIRECTOR
+      - null
+    warning_acknowledgement:
+      type:
+      - string
+      - 'null'
+    warning_acknowledged_by:
+      type:
+      - string
+      - 'null'
+      format: uuid
+    warning_acknowledged_at:
+      type:
+      - string
+      - 'null'
+      format: date-time
+    created_at:
+      type: string
+      format: date-time
+ApprovalComment:
+  type: object
+  required:
+  - id
+  - approval_id
+  - text
+  - created_by
+  - created_at
+  properties:
+    id:
+      type: string
+      format: uuid
+    approval_id:
+      type: string
+      format: uuid
+    entity_id:
+      type:
+      - string
+      - 'null'
+      format: uuid
+    text:
+      type: string
+    created_by:
+      type: string
+      format: uuid
+    created_at:
+      type: string
+      format: date-time

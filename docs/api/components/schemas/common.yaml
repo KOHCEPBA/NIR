@@ -1,0 +1,34 @@
+Page:
+  type: object
+  required:
+  - has_more
+  properties:
+    next_cursor:
+      type:
+      - string
+      - 'null'
+    has_more:
+      type: boolean
+ErrorResponse:
+  type: object
+  required:
+  - error
+  properties:
+    error:
+      type: object
+      required:
+      - code
+      - message
+      - request_id
+      properties:
+        code:
+          type: string
+        message:
+          type: string
+        details:
+          type: array
+          items:
+            type: object
+            additionalProperties: true
+        request_id:
+          type: string
